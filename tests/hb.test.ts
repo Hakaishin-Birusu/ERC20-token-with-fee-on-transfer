@@ -13,7 +13,6 @@ const debug = Debug("HB:test");
 use(solidity);
 
 describe("HB Tests", async () => {
-
   let contract: Contract;
   let TokenContract: Contract;
   let user: SignerWithAddress;
@@ -35,7 +34,7 @@ describe("HB Tests", async () => {
     owner = deployment.signers[0];
     user = deployment.signers[1];
 
-    console.log(contract.address)
+    console.log(contract.address);
   });
 
   describe("Test SQRT ", () => {
@@ -54,8 +53,7 @@ describe("HB Tests", async () => {
   });
 
   describe("Test Token contract ", () => {
-    it("Test Transfer : perfect numbers", async () => {
-      
+    it("Test Transfer", async () => {
       // tokens to send
       const totalTokens = tokens.mul(100);
 
@@ -63,22 +61,78 @@ describe("HB Tests", async () => {
       const OwnerBalance = await TokenContract!.balanceOf(owner!.address);
       const totalSupply = await TokenContract!.totalSupply();
 
+      // transfer tokens
       await TokenContract!.transfer(user!.address, totalTokens);
 
-      const OwnerBalance1 = await TokenContract!.balanceOf(owner!.address);
-      const userBalance1 = await TokenContract!.balanceOf(user!.address);
-      const ContractBalance1 = await TokenContract!.balanceOf(TokenContract!.address);
-      const totalSupply1 = await TokenContract!.totalSupply();
+      // capture after state
+      const OwnerBalanceNew = await TokenContract!.balanceOf(owner!.address);
+      const userBalanceNew = await TokenContract!.balanceOf(user!.address);
+      const ContractBalanceNew = await TokenContract!.balanceOf(
+        TokenContract!.address
+      );
+      const totalSupplyNew = await TokenContract!.totalSupply();
 
-      const feeAmt = (totalTokens.mul(500)).div(10000)
+      // Calculate amt
+      const feeAmt = totalTokens.mul(500).div(10000);
 
-      expect(OwnerBalance1).to.equal(OwnerBalance.sub(totalTokens));
-      expect(userBalance1).to.equal(totalTokens.sub(feeAmt.mul(2)));
-      expect(ContractBalance1).to.equal(feeAmt);
-      expect(totalSupply1).to.equal(totalSupply.sub(feeAmt));
-
+      // validate state
+      expect(OwnerBalanceNew).to.equal(OwnerBalance.sub(totalTokens));
+      expect(userBalanceNew).to.equal(totalTokens.sub(feeAmt.mul(2)));
+      expect(ContractBalanceNew).to.equal(feeAmt);
+      expect(totalSupplyNew).to.equal(totalSupply.sub(feeAmt));
     });
 
+    it("Test TransferFrom", async () => {
+      // tokens to send
+      const totalTokens = tokens.mul(200);
+
+      // capture states
+      const OwnerBalance = await TokenContract!.balanceOf(owner!.address);
+      const userBalance = await TokenContract!.balanceOf(user!.address);
+      const ContractBalance = await TokenContract!.balanceOf(
+        TokenContract!.address
+      );
+      const totalSupply = await TokenContract!.totalSupply();
+
+      // Approve
+      await TokenContract!.approve(user!.address, totalTokens);
+
+      // check approval
+      const allowance = await TokenContract!.allowance(
+        owner!.address,
+        user!.address
+      );
+      expect(allowance).to.equal(totalTokens);
+
+      // transfer tokens
+      await TokenContract!
+        .connect(user!)
+        .transferFrom(owner!.address, user!.address, totalTokens);
+
+      // capture after state
+      const OwnerBalanceNew = await TokenContract!.balanceOf(owner!.address);
+      const userBalanceNew = await TokenContract!.balanceOf(user!.address);
+      const ContractBalanceNew = await TokenContract!.balanceOf(
+        TokenContract!.address
+      );
+      const totalSupplyNew = await TokenContract!.totalSupply();
+      const allowanceNew = await TokenContract!.allowance(
+        owner!.address,
+        user!.address
+      );
+
+      // Calculate amt
+      const feeAmt = totalTokens.mul(500).div(10000);
+
+      // validate state
+      expect(OwnerBalanceNew).to.equal(OwnerBalance.sub(totalTokens));
+      expect(userBalanceNew).to.equal(
+        userBalance.add(totalTokens.sub(feeAmt.mul(2)))
+      );
+      expect(ContractBalanceNew).to.equal(ContractBalance.add(feeAmt));
+      expect(totalSupplyNew).to.equal(totalSupply.sub(feeAmt));
+      expect(allowanceNew).to.equal(0);
+    });
   });
 });
 
