@@ -1,0 +1,54 @@
+{
+  "name": "gl-task",
+  "version": "1.0.0",
+  "description": "gl-task",
+  "main": "index.js",
+  "scripts": {
+    "node": "npx hardhat node",
+    "compile": "npx hardhat compile",
+    "deploy": "DEBUG=HB:* npx hardhat run --network local scripts/deployer.local.ts",
+    "test": "DEBUG=HB:* hardhat test --network local tests/hb.test.ts"
+  },
+  "author": "Sagar Chaurasia",
+  "license": "ISC",
+  "dependencies": {
+    "@nomiclabs/hardhat-ethers": "^2.0.2",
+    "@openzeppelin/contracts": "^4.3.3",
+    "@openzeppelin/test-helpers": "^0.5.15",
+    "@typechain/ethers-v5": "^8.0.4",
+    "@typechain/hardhat": "^3.0.0",
+    "@types/chai": "^4.2.22",
+    "@types/config": "^0.0.40",
+    "@types/debug": "^4.1.7",
+    "@types/mocha": "^9.0.0",
+    "@types/node": "^16.11.9",
+    "chai": "^4.3.4",
+    "config": "^3.3.6",
+    "debug": "^4.3.2",
+    "ethereum-waffle": "^3.4.0",
+    "ethers": "^5.5.1",
+    "hardhat": "^2.6.8",
+    "ts-node": "^10.4.0",
+    "typechain": "^6.0.4",
+    "typescript": "^4.5.2"
+  },
+  "keywords": [
+    "Git",
+    "ABAG",
+    "Front Run",
+    "Smart Contract"
+  ],
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "files": [
+    "contracts/interfaces/*.sol",
+    "contracts/libraries/*.sol",
+    "contracts/*.sol",
+    "artifacts/contracts/**/*.json"
+  ],
+  "engines": {
+    "node": ">=10"
+  }
+}
