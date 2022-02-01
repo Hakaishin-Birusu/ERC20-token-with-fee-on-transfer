@@ -1,4 +1,3 @@
-# GL - TASK 
 
 ## Problem statement 
 
